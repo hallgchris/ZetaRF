@@ -7,12 +7,15 @@
 
 #pragma once
 
-#include <Arduino.h>
-#include <SPI.h>
+#include <algorithm>
+#include <cstring>
+#include <type_traits>
 
-#define ZETARF_SPI_SETTINGS_DEFAULT SPISettings(1000000UL, MSBFIRST, SPI_MODE0)
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
 
-#define ZETARF_SPI_SETTINGS         ZETARF_SPI_SETTINGS_DEFAULT
+#define ZETARF_SPI_SETTINGS_CHANNEL 0
+#define ZETARF_SPI_SETTINGS_FREQ 1000000UL
 
 
 template<int PinNumber>
@@ -75,13 +78,16 @@ public:
     }
 
     bool initialize() {
+        wiringPiSetup();
+        wiringPiSPISetup(ZETARF_SPI_SETTINGS_CHANNEL, ZETARF_SPI_SETTINGS_FREQ);
+
         pinMode(ChipSelect_pin, OUTPUT);
-        pinMode(IrqPin, INPUT_PULLUP);
+        pinMode(IrqPin, INPUT);
+        pullUpDnControl(IrqPin, PUD_UP);
         pinMode(ShutdownPin, OUTPUT);
 
         digitalWrite(ChipSelect_pin, HIGH);
 
-        SPI.begin();
         //putInShutdown();
         return true;
     }
@@ -110,7 +116,6 @@ public:
     {
         m_inSpiTransaction = true;
         digitalWrite(ChipSelect_pin, LOW);
-        SPI.beginTransaction(ZETARF_SPI_SETTINGS);
     }
     void resumeOrBeginSpiTransaction()
     {
@@ -128,7 +133,6 @@ public:
     }
     void endSpiTransaction()
     {
-        SPI.endTransaction();
         delayMicroseconds(1);
         digitalWrite(ChipSelect_pin, HIGH);
         m_inSpiTransaction = false;
@@ -137,7 +141,8 @@ public:
 
     uint8_t spiReadWriteByte(uint8_t value)
     {
-        return SPI.transfer(value);
+        wiringPiSPIDataRW(ZETARF_SPI_SETTINGS_CHANNEL, &value, 1);
+        return value;
     }
 
     void spiWriteByte(uint8_t value)
@@ -152,18 +157,20 @@ public:
 
     void spiReadWriteData(uint8_t* data, uint8_t count)
     {
-        SPI.transfer(data, count);
+        wiringPiSPIDataRW(ZETARF_SPI_SETTINGS_CHANNEL, data, count);
     }
 
     void spiWriteData(uint8_t const* data, uint8_t count)
     {
-        while (count--)
-            SPI.transfer(*data++);
+        // Make copy of data as wiringPi will overwrite
+        uint8_t dataCopy[count];
+        memcpy(dataCopy, data, sizeof(dataCopy));
+        wiringPiSPIDataRW(ZETARF_SPI_SETTINGS_CHANNEL, dataCopy, count);
     }
     void spiReadData(uint8_t* data, uint8_t count)
     {
-        while (count--)
-            *data++ = SPI.transfer(0xFF);
+        std::fill_n(data, count, 0xFF);
+        wiringPiSPIDataRW(ZETARF_SPI_SETTINGS_CHANNEL, data, count);
     }
 
 };
@@ -192,7 +199,8 @@ public:
     }
 
     bool initialize() {
-        pinMode(ClearToSend_pin, INPUT_PULLUP);
+        pinMode(ClearToSend_pin, INPUT);
+        pullUpDnControl(ClearToSend_pin, PUD_UP);
         return ZetaRfHal<TChipSelectPin, TShutdownPin, TIrqPin>::initialize();;
     }
 

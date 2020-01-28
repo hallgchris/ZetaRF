@@ -12,12 +12,13 @@
 
 #include <cstdint>
 #include <cstdarg>
+#include <cstring>
 
 //#define ZETARF_DEBUG_ON
 
 #if defined(ZETARF_DEBUG_ON)
-    #define debug(...)   Serial.print(__VA_ARGS__)
-    #define debugln(...) Serial.println(__VA_ARGS__)
+    #define debug(...)   std::cout << __VA_ARGS__
+    #define debugln(...) std::cout << __VA_ARGS__ << std::endl
 #else
     #define debug(...)
     #define debugln(...)
@@ -210,7 +211,7 @@ public:
             return false;
 
         // Fill the TX fifo with data
-        cmd_writeTxFifo(data, min(m_packetLength, dataSize));
+        cmd_writeTxFifo(data, std::min(m_packetLength, dataSize));
 
         // Fill remaining with data
         if (m_packetLength > dataSize)
@@ -295,7 +296,7 @@ public:
         cmd_readRxFifo(&packetDataLength, 1);
 
         debug("Read VL Packet of size: ");
-        debugln(packetDataLength);
+        debugln(+packetDataLength);
 
         if (packetDataLength <= 1) {
             cmd_resetRxFifo();
@@ -1102,7 +1103,7 @@ private:
         bool const dataRemaining { (fifoInfo.RX_FIFO_COUNT > byteCount) };
 
         debug("Read Packet: ");
-        debug(byteCount); debug('/'); debugln(fifoInfo.RX_FIFO_COUNT);
+        debug(+byteCount); debug('/'); debugln(+fifoInfo.RX_FIFO_COUNT);
 
         if (byteCount > fifoInfo.RX_FIFO_COUNT) {
             //cmd_resetRxFifo();
@@ -1130,9 +1131,9 @@ private:
     bool startListening(uint8_t channel, uint8_t packetLength)
     {
         debug("Listening on channel ");
-        debug(channel);
+        debug(+channel);
         debug(" with packet size ");
-        debugln(packetLength);
+        debugln(+packetLength);
 
         clearStatus();
         cmd_clearAllPendingInterrupts();
@@ -1152,9 +1153,9 @@ private:
     bool startListeningSinglePacket(uint8_t channel, uint8_t packetLength)
     {
         debug("Listening single packet on channel ");
-        debug(channel);
+        debug(+channel);
         debug(" with packet size ");
-        debugln(packetLength);
+        debugln(+packetLength);
 
         clearStatus();
         cmd_clearAllPendingInterrupts();

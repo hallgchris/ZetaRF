@@ -5,64 +5,68 @@
  * Usage: write this sample on both boards and send text over serial!
  */
 
+#define ZETARF_DEBUG_ON
+
+#include <iostream>
+#include <wiringPi.h>
 #include <ZetaRF.h>
 
 // Zeta modules transmit messages using fixed size packets, define here the max size you want to use
 #define ZETARF_PACKET_LENGTH 8
 
-ZetaRF868 zeta;//(10, 9, 8);  // Pins: SPI CS, Shutdown, IRQ
+ZetaRF433<ChipSelectPin<6>, ShutdownPin<9>, IrqPin<8>> zeta;
 
 char data[ZETARF_PACKET_LENGTH] = "Hello ";
 bool transmitting = false;
 
 
-void setup()
+bool setup()
 {
-  Serial.begin(115200);
   delay(1000);
-  
-  Serial.println("Starting Zeta TxRx...");
+
+  std::cout << "Starting Zeta TxRx..." << std::endl;
 
   // Initialize Zeta module, specifing channel and packet size
   if (!zeta.begin()) {//, ZETARF_PACKET_LENGTH);
-    Serial.println("Zeta begin failed");
-    while(true);
+    std::cout << "Zeta begin failed" << std::endl;
+    return false;
   }
-  
-  zeta.startListeningOnChannel(4);
 
   // Print some info about the chip
   const Si4455_PartInfo &pi = zeta.readPartInformation();
-  Serial.println("----------");
-  Serial.print("Chip rev: "); Serial.println(pi.CHIPREV);
-  Serial.print("Part    : "); Serial.println(pi.PART.U16);
-  Serial.print("PBuild  : "); Serial.println(pi.PBUILD);
-  Serial.print("ID      : "); Serial.println(pi.ID.U16);
-  Serial.print("Customer: "); Serial.println(pi.CUSTOMER);
-  Serial.print("Rom ID  : "); Serial.println(pi.ROMID);
-  Serial.print("Bond    : "); Serial.println(pi.BOND);
-  Serial.print('\n');
+  std::cout << "----------" << std::endl;
+  std::cout << "Chip rev: " << (int) pi.CHIPREV  << std::endl;
+  std::cout << "Part    : " <<       pi.PART.U16 << std::endl;
+  std::cout << "PBuild  : " << (int) pi.PBUILD   << std::endl;
+  std::cout << "ID      : " <<       pi.ID.U16   << std::endl;
+  std::cout << "Customer: " << (int) pi.CUSTOMER << std::endl;
+  std::cout << "Rom ID  : " << (int) pi.ROMID    << std::endl;
+  std::cout << "Bond    : " << (int) pi.BOND     << std::endl;
+  std::cout << std::endl;
 
   const Si4455_FuncInfo &fi = zeta.readFunctionRevisionInformation();
-  Serial.print("Rev Ext   : "); Serial.println(fi.REVEXT);
-  Serial.print("Rev Branch: "); Serial.println(fi.REVBRANCH);
-  Serial.print("Rev Int   : "); Serial.println(fi.REVINT);
-  Serial.print("Patch     : "); Serial.println(fi.PATCH.U16);
-  Serial.print("Func      : "); Serial.println(fi.FUNC);
-  Serial.print("SVN Flags : "); Serial.println(fi.SVNFLAGS);
-  Serial.print("SVN Rev   : "); Serial.println(fi.SVNREV.U32);
-  Serial.println("----------");//*/
+  std::cout << "Rev Ext   : " << (int) fi.REVEXT     << std::endl;
+  std::cout << "Rev Branch: " << (int) fi.REVBRANCH  << std::endl;
+  std::cout << "Rev Int   : " << (int) fi.REVINT     << std::endl;
+  std::cout << "Patch     : " << (int) fi.PATCH.U16  << std::endl;
+  std::cout << "Func      : " << (int) fi.FUNC       << std::endl;
+  std::cout << "SVN Flags : " << (int) fi.SVNFLAGS   << std::endl;
+  std::cout << "SVN Rev   : " <<       fi.SVNREV.U32 << std::endl;
+  std::cout << "----------" << std::endl; //*/
   
-  // Set module in receive mode
-  //zeta.startListening();
+  zeta.startListeningOnChannel(4);
 
-  Serial.println("Init done.");
+  std::cout << "Init done." << std::endl;
+  return true;
 }
 
 
 
 void loop()
 {
+  // @todo Haven't worked out how to do this bit yet.
+  // Requires simultaneous input/output from standard io.
+
   // Send any data received from serial
   /*if (Serial.available() && !transmitting) {
     int s = Serial.readBytes(data, ZETARF_PACKET_LENGTH);
@@ -89,17 +93,21 @@ void loop()
   }//*/
 
   // Check incoming messages and print
-  /*if (zeta.checkReceived()) {
-    Serial.print("> ");
+  if (zeta.checkReceived()) {
+    std::cout << "> ";
     zeta.readFixedLengthPacket((uint8_t*)data, ZETARF_PACKET_LENGTH);
     uint8_t* data_ = (uint8_t*)data;
     for (int i = 0; i < ZETARF_PACKET_LENGTH; i++) {
-      Serial.print(uint8_t(*data_++), HEX);
+      std::cout << *data_++;
     }
-    //Serial.write(data, ZETARF_PACKET_LENGTH);
-    Serial.print('\n');
+    std::cout << std::endl;
   }//*/
   
   delay(10);
 }
 
+int main() {
+    if (!setup()) return 1;
+
+    while (true) loop();
+}

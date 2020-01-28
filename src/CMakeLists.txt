@@ -3,5 +3,5 @@ project(zetarf)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.h" "*.cpp")
 
-add_library(zetarf ${SOURCES})
+add_library(zetarf SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} wiringPi)

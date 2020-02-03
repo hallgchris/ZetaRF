@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "si4455_defs.h"
 
 #include "zetarf_hal.h"
@@ -90,6 +92,10 @@ template <typename Config, class ...HalTypes>
 class ZetaRFImpl// : public ZetaRF
 {
 public:
+    void sayHello() {
+        std::cout << "Hello!" << std::endl;
+    }
+
     //! Current internal radio state
     ZetaRF::RadioState radioState() {
         return m_radio.radioState();
@@ -239,7 +245,6 @@ private:
     ZetaRFRadioImpl< ZetaRfHal<HalTypes...> > m_radio;
 };
 
-
 // Default configs
 template<class ...Ts>
 using ZetaRF868 = ZetaRFImpl<ZetaRFConfigs::Config868_FixedLength_CRC_Preamble10_Sync4_Payload8, Ts...>;
@@ -253,3 +258,7 @@ using ZetaRF868_VL = ZetaRFImpl<ZetaRFConfigs::Config868_VariableLength_CRC_Prea
 
 template<class ...Ts>
 using ZetaRF433_VL = ZetaRFImpl<ZetaRFConfigs::Config433_VariableLength_CRC_Preamble10_Sync4_Payload8, Ts...>;
+
+
+// Testing
+using ZetaRF433_preset_pins = ZetaRF433<ChipSelectPin<6>, ShutdownPin<9>, IrqPin<10>>;

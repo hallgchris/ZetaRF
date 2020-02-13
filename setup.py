@@ -5,7 +5,7 @@ from Cython.Build import cythonize
 zetarf433_extension = Extension(
     name="zetarf433",
     sources=["zetarf433.pyx"],
-    libraries=["zetarf"],
+    libraries=["zetarf", "wiringPi"],
     library_dirs=["build"],
     include_dirs=["src"],
 )

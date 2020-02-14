@@ -65,9 +65,11 @@ cdef class PySi4455_FuncInfo:
 
 cdef class PyZetaRF433:
     cdef ZetaRF433_PresetPins *thisptr
+    cdef int packet_length
 
-    def __cinit__(self):
+    def __cinit__(self, packet_length: int):
         self.thisptr = new ZetaRF433_PresetPins()
+        self.packet_length = packet_length
     def __dealloc__(self):
         del self.thisptr
 
@@ -86,3 +88,14 @@ cdef class PyZetaRF433:
         cdef PySi4455_FuncInfo val = PySi4455_FuncInfo()
         val.thisptr[0] = self.thisptr.readFunctionRevisionInformation()
         return val
+
+    def start_listening_on_channel(self, channel: int) -> bool:
+        return self.thisptr.startListeningOnChannel(channel)
+
+    def check_received(self) -> bool:
+        return self.thisptr.checkReceived()
+
+    def read_fixed_length_packet(self) -> bytes:
+        packet = bytes(self.packet_length)
+        self.thisptr.readFixedLengthPacket(packet, self.packet_length)
+        return packet

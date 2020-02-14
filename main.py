@@ -1,7 +1,8 @@
+from time import sleep
 from zetarf433 import PyZetaRF433
 
 if __name__ == "__main__":
-    zeta = PyZetaRF433()
+    zeta = PyZetaRF433(8)
 
     print("Starting Zeta TxRx...")
     if not zeta.begin():
@@ -24,5 +25,13 @@ if __name__ == "__main__":
     print(f"Func      : {func_info.func}")
     print(f"SVN Flags : {func_info.svn_flags}")
     print()
+
+    if not zeta.start_listening_on_channel(4):
+        print("Failed to begin listening")
     
-    zeta.say_hello()
+    print("Init done.")
+
+    while True:
+        sleep(0.01)
+        if (zeta.check_received()):
+            print(zeta.read_fixed_length_packet())

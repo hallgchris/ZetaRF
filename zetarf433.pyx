@@ -5,15 +5,7 @@ from libcpp cimport bool
 
 from Si4455_PartInfo cimport Si4455_PartInfo
 from Si4455_FuncInfo cimport Si4455_FuncInfo
-
-cdef extern from "src/ZetaRF.h":
-
-    cdef cppclass ZetaRF433_preset_pins:
-        ZetaRF433_preset_pins() except +
-        void sayHello()
-        bool begin()
-        Si4455_PartInfo readPartInformation()
-        Si4455_FuncInfo readFunctionRevisionInformation()
+from ZetaRF433_PresetPins cimport ZetaRF433_PresetPins
 
 cdef class PySi4455_PartInfo:
     cdef Si4455_PartInfo *thisptr
@@ -72,10 +64,10 @@ cdef class PySi4455_FuncInfo:
         return self.thisptr.SVNFLAGS
 
 cdef class PyZetaRF433:
-    cdef ZetaRF433_preset_pins *thisptr
+    cdef ZetaRF433_PresetPins *thisptr
 
     def __cinit__(self):
-        self.thisptr = new ZetaRF433_preset_pins()
+        self.thisptr = new ZetaRF433_PresetPins()
     def __dealloc__(self):
         del self.thisptr
 

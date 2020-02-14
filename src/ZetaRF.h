@@ -261,4 +261,4 @@ using ZetaRF433_VL = ZetaRFImpl<ZetaRFConfigs::Config433_VariableLength_CRC_Prea
 
 
 // Testing
-using ZetaRF433_preset_pins = ZetaRF433<ChipSelectPin<6>, ShutdownPin<9>, IrqPin<10>>;
+using ZetaRF433_PresetPins = ZetaRF433<ChipSelectPin<6>, ShutdownPin<9>, IrqPin<10>>;

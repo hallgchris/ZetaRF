@@ -99,3 +99,6 @@ cdef class PyZetaRF433:
         packet = bytes(self.packet_length)
         self.thisptr.readFixedLengthPacket(packet, self.packet_length)
         return packet
+
+    def send_packet(self, channel: int, data: bytes) -> bool:
+        return self.thisptr.sendPacket(channel, data, self.packet_length)

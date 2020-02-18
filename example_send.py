@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 from time import sleep
-from zetarf433 import PyZetaRF433
+from zetarf433 import PyZetaRF433, Status
 
 if __name__ == "__main__":
     zeta = PyZetaRF433(8)
@@ -31,6 +32,13 @@ if __name__ == "__main__":
 
     print("Init done.")
 
+    last_send_time = datetime.now()
     while True:
-        sleep(2)
-        zeta.send_packet(4, b"test")
+        now = datetime.now()
+        if last_send_time + timedelta(seconds=2) < now:
+            print("Sending")
+            zeta.send_packet(4, b"test")
+            last_send_time = now
+
+        if zeta.check_for(Status.DataTransmitted):
+            print("Data transmitted")

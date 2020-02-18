@@ -8,6 +8,8 @@ cdef extern from "src/ZetaRF.h" namespace "ZetaRF":
 
     cdef cppclass ReadPacketResult:
         pass
+    cdef cppclass Status:
+        pass
 
 cdef extern from "src/ZetaRF.h":
 
@@ -21,7 +23,9 @@ cdef extern from "src/ZetaRF.h":
         Si4455_FuncInfo readFunctionRevisionInformation()
         bool startListeningOnChannel(uint8_t channel)
 
+        bool checkFor(Status status)
         bool checkReceived()
+
         ReadPacketResult readFixedLengthPacket(uint8_t*& data, uint8_t byteCount)
 
         bool sendPacket(uint8_t channel, const uint8_t *data, uint8_t dataSize)

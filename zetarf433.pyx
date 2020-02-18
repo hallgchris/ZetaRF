@@ -63,6 +63,29 @@ cdef class PySi4455_FuncInfo:
     def svn_flags(self):
         return self.thisptr.SVNFLAGS
 
+cpdef enum Status:
+    NoStatus = 0
+
+    # Packet Handler
+    DataTransmitted
+    DataAvailable
+    CrcError
+    FifoAlmostEmpty
+    FifoAlmostFull
+
+    # Modem Interrupt
+    InvalidSync
+    InvalidPreamble
+    DetectedPreamble
+    DetectedSync
+    LatchedRssi
+
+    # Chip Interrupt
+    FifoUnderflowOrOverflowError
+    CommandError
+
+    DeviceBusy
+
 cdef class PyZetaRF433:
     cdef ZetaRF433_PresetPins *thisptr
     cdef int packet_length
@@ -91,6 +114,9 @@ cdef class PyZetaRF433:
 
     def start_listening_on_channel(self, channel: int) -> bool:
         return self.thisptr.startListeningOnChannel(channel)
+
+    def check_for(self, status: Status) -> bool:
+        return self.thisptr.checkFor(status)
 
     def check_received(self) -> bool:
         return self.thisptr.checkReceived()

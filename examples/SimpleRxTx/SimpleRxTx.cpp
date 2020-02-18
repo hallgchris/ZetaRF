@@ -12,7 +12,7 @@
 #include <ZetaRF.h>
 
 // Zeta modules transmit messages using fixed size packets, define here the max size you want to use
-#define ZETARF_PACKET_LENGTH 8
+#define ZETARF_PACKET_LENGTH 16
 
 ZetaRF433<ChipSelectPin<6>, ShutdownPin<9>, IrqPin<8>> zeta;
 
@@ -27,7 +27,7 @@ bool setup()
   std::cout << "Starting Zeta TxRx..." << std::endl;
 
   // Initialize Zeta module, specifing channel and packet size
-  if (!zeta.begin()) {//, ZETARF_PACKET_LENGTH);
+  if (!zeta.beginWithPacketLengthOf(ZETARF_PACKET_LENGTH)) {
     std::cout << "Zeta begin failed" << std::endl;
     return false;
   }

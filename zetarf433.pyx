@@ -90,17 +90,21 @@ cdef class PyZetaRF433:
     cdef ZetaRF433_PresetPins *thisptr
     cdef int packet_length
 
-    def __cinit__(self, packet_length: int):
+    def __cinit__(self):
         self.thisptr = new ZetaRF433_PresetPins()
-        self.packet_length = packet_length
     def __dealloc__(self):
         del self.thisptr
 
     def say_hello(self) -> None:
         self.thisptr.sayHello()
 
-    def begin(self) -> bool:
-        return self.thisptr.begin()
+    def begin(self, packet_length: int = -1) -> bool:
+        """ packet_length == -1 for default (see configs, most likely 8 bytes) """
+        self.packet_length = packet_length
+        if self.packet_length == -1:
+            return self.thisptr.begin()
+        else:
+            return self.thisptr.beginWithPacketLengthOf(self.packet_length)
 
     def readPartInformation(self) -> PySi4455_PartInfo:
         cdef PySi4455_PartInfo val = PySi4455_PartInfo()
@@ -127,4 +131,6 @@ cdef class PyZetaRF433:
         return packet
 
     def send_packet(self, channel: int, data: bytes) -> bool:
+        """ Sends the first self.packet_length of data.
+            If data is shorter than self.packet_length, zeros are automatically appended. """
         return self.thisptr.sendPacket(channel, data, self.packet_length)

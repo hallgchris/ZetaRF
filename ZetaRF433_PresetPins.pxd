@@ -19,6 +19,8 @@ cdef extern from "src/ZetaRF.h":
         void sayHello()
 
         bool begin()
+        bool beginWithPacketLengthOf(uint8_t packetLength)
+
         Si4455_PartInfo readPartInformation()
         Si4455_FuncInfo readFunctionRevisionInformation()
         bool startListeningOnChannel(uint8_t channel)

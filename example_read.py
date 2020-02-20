@@ -8,7 +8,7 @@ if __name__ == "__main__":
     zeta = PyZetaRF433()
 
     print("Starting Zeta TxRx...")
-    if not zeta.begin(PACKET_LENGTH):
+    if not zeta.beginWithPacketLengthOf(PACKET_LENGTH):
         print("Zeta begin failed")
 
     part_info = zeta.readPartInformation()
@@ -37,4 +37,4 @@ if __name__ == "__main__":
     while True:
         sleep(0.01)
         if (zeta.check_received()):
-            print(zeta.read_fixed_length_packet())
+            print(zeta.read_packet())

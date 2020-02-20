@@ -16,18 +16,17 @@ cdef extern from "src/ZetaRF.h":
     cdef cppclass ZetaRF433_PresetPins:
         ZetaRF433_PresetPins() except +
 
-        void sayHello()
-
         bool begin()
         bool beginWithPacketLengthOf(uint8_t packetLength)
 
+        bool startListeningOnChannel(uint8_t channel)
+
         Si4455_PartInfo readPartInformation()
         Si4455_FuncInfo readFunctionRevisionInformation()
-        bool startListeningOnChannel(uint8_t channel)
 
         bool checkFor(Status status)
         bool checkReceived()
 
-        ReadPacketResult readFixedLengthPacket(uint8_t*& data, uint8_t byteCount)
+        ReadPacketResult readPacket(uint8_t*& data, uint8_t byteCount)
 
         bool sendPacket(uint8_t channel, const uint8_t *data, uint8_t dataSize)

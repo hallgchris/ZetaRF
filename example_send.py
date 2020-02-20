@@ -9,7 +9,7 @@ if __name__ == "__main__":
     zeta = PyZetaRF433()
 
     print("Starting Zeta TxRx...")
-    if not zeta.begin(PACKET_LENGTH):
+    if not zeta.beginWithPacketLengthOf(PACKET_LENGTH):
         print("Zeta begin failed")
 
     part_info = zeta.readPartInformation()
@@ -30,9 +30,6 @@ if __name__ == "__main__":
     print(f"SVN Flags : {func_info.svn_flags}")
     print()
 
-    if not zeta.start_listening_on_channel(CHANNEL):
-        print("Failed to begin listening")
-
     print("Init done.")
 
     last_send_time = datetime.now()
@@ -40,7 +37,7 @@ if __name__ == "__main__":
         now = datetime.now()
         if last_send_time + timedelta(seconds=2) < now:
             print("Sending")
-            zeta.send_packet(CHANNEL, b"test")
+            zeta.send_packet(CHANNEL, b"test", PACKET_LENGTH)
             last_send_time = now
 
         if zeta.check_for(Status.DataTransmitted):

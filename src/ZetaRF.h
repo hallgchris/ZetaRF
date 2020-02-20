@@ -92,10 +92,6 @@ template <typename Config, class ...HalTypes>
 class ZetaRFImpl// : public ZetaRF
 {
 public:
-    void sayHello() {
-        std::cout << "Hello!" << std::endl;
-    }
-
     //! Current internal radio state
     ZetaRF::RadioState radioState() {
         return m_radio.radioState();

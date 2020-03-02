@@ -120,7 +120,7 @@ cdef class PyZetaRF433:
         return self.thisptr.checkReceived()
 
     def read_packet(self, packet_length: int) -> bytes:
-        packet = bytes(self.packet_length)
+        packet = bytes(packet_length)
         self.thisptr.readPacket(packet, packet_length)
         return packet
 

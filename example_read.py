@@ -37,4 +37,4 @@ if __name__ == "__main__":
     while True:
         sleep(0.01)
         if (zeta.check_received()):
-            print(zeta.read_packet())
+            print(zeta.read_packet(PACKET_LENGTH))
